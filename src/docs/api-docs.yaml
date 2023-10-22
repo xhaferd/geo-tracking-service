@@ -1,0 +1,47 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: "Geo-Tracking API"
+  description: "Geo-Tracking API Information"
+  termsOfService: "http://example.com/terms/"
+  contact:
+    name: "Your Name"
+    email: "your.email@example.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3000"
+basePath: "/"
+schemes:
+  - "http"
+
+paths:
+  /api/taxis:
+    get:
+      tags:
+        - "Taxis"
+      summary: "Returns all taxis"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Taxi"
+
+definitions:
+  Taxi:
+    type: "object"
+    properties:
+      driver:
+        type: "string"
+      location:
+        type: "string"
+      coordinates:
+        type: "array"
+        items:
+          type: "number"
+      timestamp:
+        type: "number"
