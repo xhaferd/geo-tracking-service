@@ -1,16 +1,22 @@
 import { BaseController } from './BaseController';
-import { Taxi } from '../models/Taxi';
+import { Location } from '../models/Location';
 import { Request, Response, NextFunction } from 'express';
 import { LocationResponseDTO } from '../types/Responses';
+import { CustomError } from '../types/CustomError';
 
 class DriversController extends BaseController {
     getDriverLocationsByDay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { driverName, day } = req.params;
-        const startTimestamp = new Date(day).getTime();
-        const endTimestamp = new Date(day).setHours(23, 59, 59, 999);
-
         try {
-            const locations: LocationResponseDTO[] = await Taxi.aggregate([
+            const { driverName, day } = req.params;
+
+            const startTimestamp = new Date(day).getTime();
+            const endTimestamp = new Date(day).setHours(23, 59, 59, 999);
+
+            if (!driverName || !day) {
+                throw new CustomError('Parameters driverName and day are required', 400)
+            }
+
+            const locations: LocationResponseDTO[] = await Location.aggregate([
                 {
                     $match: {
                         driver: driverName,
@@ -31,10 +37,12 @@ class DriversController extends BaseController {
     }
 
     getDrivers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { locationName, keyword } = req.body;
-
         try {
-            const driversList = await Taxi.aggregate([
+            const { locationName, keyword } = req.body;
+            if (!locationName || !keyword) {
+                throw new CustomError('Parameters locationName and keyword are required', 400)
+            }
+            const driversList = await Location.aggregate([
                 {
                     $match: {
                         $or: [
@@ -56,17 +64,20 @@ class DriversController extends BaseController {
     }
 
     deleteDriverData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { driverName } = req.params;
-        const { startTimestamp, endTimestamp } = req.body; // optional for time range
-
-        const filter: any = { driver: driverName };
-
-        if (startTimestamp && endTimestamp) {
-            filter.timestamp = { $gte: startTimestamp, $lte: endTimestamp };
-        }
-
         try {
-            await Taxi.deleteMany(filter);
+            const { driverName } = req.params;
+            const { startTimestamp, endTimestamp } = req.body; // optional for time range
+
+            if (!driverName) {
+                throw new CustomError('Parameters driverName are required', 400)
+            }
+
+            const filter: any = { driver: driverName };
+
+            if (startTimestamp && endTimestamp) {
+                filter.timestamp = { $gte: startTimestamp, $lte: endTimestamp };
+            }
+            await Location.deleteMany(filter);
             return this.responseService(res).withSuccess('Success', 201);
         } catch (error) {
             next(error);
@@ -74,10 +85,13 @@ class DriversController extends BaseController {
     }
 
     getNearbyDrivers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { coordinates, radius, timePeriod } = req.body;
-
         try {
-            const driversList = await Taxi.aggregate([
+            const { coordinates, radius, timePeriod } = req.body;
+
+            if (!coordinates || !radius || !timePeriod) {
+                throw new CustomError('Parameters coordinates, radios and timePeriod are required', 400)
+            }
+            const driversList = await Location.aggregate([
                 {
                     $geoNear: {
                         near: {

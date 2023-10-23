@@ -8,3 +8,5 @@ router.get('/drivers/:driverName/locations/:day', cacheMiddleware, driversContro
 router.post('/search/drivers', cacheMiddleware, driversController.getDrivers);
 router.delete('/drivers/:driverName/locations', driversController.deleteDriverData);
 router.post('/search/nearby-drivers', cacheMiddleware, driversController.getNearbyDrivers);
+
+export = router

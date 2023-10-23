@@ -1,7 +1,7 @@
 import mongoose, { ConnectOptions } from 'mongoose';
 import { config } from '../config'
 import { CustomError } from '../types/CustomError';
-import { Taxi } from '../models/Taxi'
+import { Location } from '../models/Location'
 
 const DRIVERS = ["John", "Jane", "Doe", "Alice", "Bob"];
 const LOCATIONS = ["LocationA", "LocationB", "LocationC", "LocationD", "LocationE", "LocationF"];
@@ -14,7 +14,7 @@ function getRandomCoordinates() {
     return [Math.random() * 180 - 90, Math.random() * 360 - 180];
 }
 
-function generateTaxiData() {
+function generateLocationData() {
     return {
         driver: getRandomItem(DRIVERS),
         location: getRandomItem(LOCATIONS),
@@ -25,9 +25,9 @@ function generateTaxiData() {
 
 async function populateDatabase() {
     for (let i = 0; i < 100; i++) {
-        const taxiData = generateTaxiData();
-        const taxi = new Taxi(taxiData);
-        await taxi.save();
+        const locationData = generateLocationData();
+        const location = new Location(locationData);
+        await location.save();
     }
     console.log("Database populated with sample data!");
 }

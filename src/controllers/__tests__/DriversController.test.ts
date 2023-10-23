@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
-import { Taxi } from '../../models/Taxi';
+import { Location } from '../../models/Location';
 import { driversController } from '../DriversController';
 import { app } from '../../server';  // your express application entry
 
@@ -23,7 +23,7 @@ describe('Drivers Controller', () => {
                     timestamp: new Date().getTime()
                 },
             ];
-            const stub = sinon.stub(Taxi, 'aggregate').returns({ exec: sinon.stub().returns(Promise.resolve(driverLocations)) } as any);
+            const stub = sinon.stub(Location, 'aggregate').returns({ exec: sinon.stub().returns(Promise.resolve(driverLocations)) } as any);
 
             const response = await chai.request(app).get('/drivers/John Doe/locations?day=2023-10-22');
             expect(response.status).to.equal(200);
@@ -37,7 +37,7 @@ describe('Drivers Controller', () => {
                 { driver: 'Driver1' },
                 { driver: 'Driver2' },
             ];
-            const stub = sinon.stub(Taxi, 'aggregate').returns({ exec: sinon.stub().returns(Promise.resolve(driversData)) } as any);
+            const stub = sinon.stub(Location, 'aggregate').returns({ exec: sinon.stub().returns(Promise.resolve(driversData)) } as any);
 
             const response = await chai.request(app).post('/search/drivers').send({ locationName: 'SomePlace' });
             expect(response.status).to.equal(200);

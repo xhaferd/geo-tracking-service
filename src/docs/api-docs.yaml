@@ -3,36 +3,170 @@ info:
   version: "1.0.0"
   title: "Geo-Tracking API"
   description: "Geo-Tracking API Information"
-  termsOfService: "http://example.com/terms/"
   contact:
-    name: "Your Name"
-    email: "your.email@example.com"
+    name: "Xhafer Durmishi"
+    email: "xhaferdurmishi95@gmail.com"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "localhost:3000"
-basePath: "/"
+basePath: "/api"
 schemes:
   - "http"
 
 paths:
-  /api/taxis:
+  /drivers/{driverName}/locations/{day}:
     get:
       tags:
-        - "Taxis"
-      summary: "Returns all taxis"
+        - "Locations"
+      summary: "Returns locations for a specific driver on a specific day"
       produces:
         - "application/json"
+      parameters:
+        - name: "driverName"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "day"
+          in: "path"
+          required: true
+          type: "string"
       responses:
         200:
           description: "successful operation"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Taxi"
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /search/drivers:
+    post:
+      tags:
+        - "Search"
+      summary: "Search for drivers by location or keyword"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "driverData"
+          in: "body"
+          required: true
+          description: "Data required to search for nearby drivers"
+          schema:
+            type: "object"
+            properties:
+              keyword:
+                type: "string"
+                description: "Keyword to search for drivers"
+              locationName:
+                type: "string"
+                description: "Location name to search drivers in"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /drivers/{driverName}/locations:
+    delete:
+      tags:
+        - "Locations"
+      summary: "Delete location data for a specific driver"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "driverName"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "timestamps"
+          in: "body"
+          required: false
+          description: "Data required to filter by timestamp"
+          schema:
+            type: "object"
+            properties:
+              startTimestamp:
+                type: "string"
+                description: "filtering from this timestamp"
+              endTimestamp:
+                type: "string"
+                description: "filtering to this timestamp"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /search/nearby-drivers:
+    post:
+      tags:
+        - "Search"
+      summary: "Search for nearby drivers based on coordinates and radius"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "nearbyData"
+          in: "body"
+          required: true
+          description: "Data required to search for nearby drivers"
+          schema:
+            type: "object"
+            properties:
+              coordinates:
+                type: "string"
+                description: "Coordinates to center the search"
+              radius:
+                type: "string"
+                description: "Coordinates to search on"
+              timePeriod:
+                type: "string"
+                description: "Time period to search for"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
 definitions:
-  Taxi:
+  SuccessResponse:
+    type: "object"
+    properties:
+      success:
+        type: "boolean"
+        default: true
+      message:
+        type: "string"
+        default: "Success"
+      data:
+        $ref: "#/definitions/Location"
+
+  ErrorResponse:
+    type: "object"
+    properties:
+      success:
+        type: "boolean"
+        default: false
+      message:
+        type: "string"
+      data:
+        type: "array"
+        default: []
+
+  Location:
     type: "object"
     properties:
       driver:
