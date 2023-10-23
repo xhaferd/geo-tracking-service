@@ -7,7 +7,8 @@
     "serve": "ts-node src/server.ts",
     "build": "tsc && cp ./src/docs/api-docs.yaml ./dist/docs/api-docs.yaml",
     "start": "node dist/server.js",
-    "test": "npm run build && mocha './**/__tests__/*.test.js'"
+    "test": "npm run build && mocha './**/__tests__/*.test.js'",
+    "seed": "node ./dist/database/seeder.js"
   },
   "keywords": [],
   "author": "",
