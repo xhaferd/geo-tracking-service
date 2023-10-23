@@ -39,8 +39,8 @@ class DriversController extends BaseController {
     getDrivers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { locationName, keyword } = req.body;
-            if (!locationName || !keyword) {
-                throw new CustomError('Parameters locationName and keyword are required', 400)
+            if (!locationName && !keyword) {
+                throw new CustomError('Parameters locationName and/or keyword are required', 400)
             }
             const driversList = await Location.aggregate([
                 {
@@ -57,7 +57,7 @@ class DriversController extends BaseController {
             ]);
 
             const drivers = driversList.map(loc => loc.driver);
-            return this.responseService(res).withSuccess('Success', 200, { drivers: [...new Set(drivers)] });
+            return this.responseService(res).withSuccess('Success', 200, [...new Set(drivers)]);
         } catch (error) {
             next(error);
         }
@@ -117,7 +117,7 @@ class DriversController extends BaseController {
             ]);
 
             const drivers = driversList.map(loc => loc.driver);
-            return this.responseService(res).withSuccess('Success', 200, { drivers: [...new Set(drivers)] });
+            return this.responseService(res).withSuccess('Success', 200, [...new Set(drivers)]);
         } catch (error) {
             next(error);
         }
